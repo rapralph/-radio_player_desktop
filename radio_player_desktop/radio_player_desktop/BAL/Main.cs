@@ -1,34 +1,55 @@
-﻿using System;
+﻿using NAudio.Wave;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Policy;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace radio_player_desktop.BAL
 {
     public class Main
     {
-        private WMPLib.WindowsMediaPlayer _player = new WMPLib.WindowsMediaPlayer();
         private DAL.Api _api;
+        private MediaFoundationReader _mf;
+        private WaveOutEvent _wo;
 
 
         public Main() {
-            _player = new WMPLib.WindowsMediaPlayer();
             _api = new DAL.Api();
         }
 
 
-        public void Play() {
+        public async Task  Play() 
+        {
 
-            _player.URL = _api.Wish;
-            _player.settings.volume = 100;
+            var url = "https://magic.radioca.st/stream";
 
-            _player.controls.play();
+
+            _mf = new MediaFoundationReader(url);
+            _wo = new WaveOutEvent();
+
+
+            _wo.Init(_mf);
+            _wo.Play();
+
+                await Task.Run(() => {
+                    while (_wo.PlaybackState == PlaybackState.Playing)
+                    {
+                        Thread.Sleep(1000);
+                    }
+                });
+
+            
 
         }
 
         public void Stop() {
-            _player.controls.stop();
+            //_player.controls.stop();
+
+            _wo.Stop();
+            _wo.Dispose();
         }
 
 

@@ -24,7 +24,7 @@ namespace radio_player_desktop.Views
 
         }
 
-        private void start_Click(object sender, EventArgs e)
+        private void  start_Click(object sender, EventArgs e)
         {
             _mainBal.Play();
         }
